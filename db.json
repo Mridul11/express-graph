@@ -1,0 +1,34 @@
+{
+  "users": [
+    {
+      "id": "11",
+      "firstName": "mridul",
+      "age": 12,
+      "companyId": "1"
+    },
+    {
+      "firstName": "Vipul",
+      "age": 30,
+      "companyId": "1",
+      "id": "12"
+    },
+    {
+      "firstName": "Anjali",
+      "age": 30,
+      "companyId": "1",
+      "id": "ArOK5m5"
+    }
+  ],
+  "companies": [
+    {
+      "id": "1",
+      "name": "Apple Inc",
+      "description": "M1 apple silicon!"
+    },
+    {
+      "id": "2",
+      "name": "Google Inc",
+      "description": "earch engine"
+    }
+  ]
+}
