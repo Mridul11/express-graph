@@ -6,12 +6,12 @@ import axios from "axios";
 const CompanyType = new GraphQLObjectType({
     name: 'Company',
     fields: () => ({
-        id: { type: GraphQLString },
-        name: { type: GraphQLString },
-        description: { type: GraphQLString },
+        id: { type: GraphQLString, resolve: (parent, _) =>  parent.id},
+        name: { type: GraphQLString,  resolve: (parent, _) => parent.name },
+        description: { type: GraphQLString, resolve: (parent, _) => parent.description },
         users: { 
             type: GraphQLList(UserType), 
-            resolve: async (parent, args) => {
+            resolve: async (parent, _) => {
                 const res = await axios.get(`http://localhost:3000/companies/${parent.id}/users`) 
                 return res.data ; 
             }
@@ -22,12 +22,12 @@ const CompanyType = new GraphQLObjectType({
 const UserType = new GraphQLObjectType({
     name: 'User',
     fields: () => ({
-        id: {type: GraphQLString},
-        firstName: {type: GraphQLString},
-        age: {type: GraphQLInt},
+        id: {type: GraphQLString, resolve: (parent, _) => parent.id },
+        firstName: {type: GraphQLString, resolve: (parent, _) => parent.firstName },
+        age: {type: GraphQLInt, resolve: (parent, _) => parent.age },
         company: { 
             type: CompanyType, 
-            resolve: async (parent, args) => {
+            resolve: async (parent, _args) => {
                 console.log(parent);
                     const res = await axios.get(`http://localhost:3000/companies/${parent.companyId}`) 
                     return res.data ;
@@ -38,20 +38,38 @@ const UserType = new GraphQLObjectType({
 
 // query by which we will fetch the data ... 
 const RootQuery = new GraphQLObjectType({
-    name: 'RootQueryType',
+    name: 'RootQueryType', 
     fields:{
+        users: {
+            type: GraphQLList(UserType),
+            description: 'this searches for users',
+            resolve: async (_, args) => {
+                const res = await axios.get(`http://localhost:3000/users/`) 
+                return res.data 
+            }
+        },
+        companies: {
+            type: GraphQLList(CompanyType),
+            description: 'this searches for comapnies',
+            resolve: async (_, args) => {
+            const res = await axios.get(`http://localhost:3000/companies/`) 
+            return res.data 
+            }
+        },
         user: {
             type: UserType,
+            description: 'this searches for users for the specific id',
             args: { id: { type: GraphQLString }},
-            resolve: async (parent, args) => {
+            resolve: async (_, args) => {
                     const res = await axios.get(`http://localhost:3000/users/${args.id}`) 
                     return res.data ;
             }
         },
        company:{
            type: CompanyType,
+           description: 'this searches for comapnies for the specific id',
            args: { id: {type: GraphQLString }},
-           resolve: async (parent, args) => {
+           resolve: async (_, args) => {
                const res = await axios.get(`http://localhost:3000/companies/${args.id}`)
                return res.data ; 
            }
@@ -59,7 +77,7 @@ const RootQuery = new GraphQLObjectType({
     }
 });
 
-// queries by which we will make mutation..
+// query by which we will make mutation ...
 const mutation = new GraphQLObjectType({
     name: "Mutation",
     fields:{
@@ -70,7 +88,7 @@ const mutation = new GraphQLObjectType({
                 age: {type:  new GraphQLNonNull(GraphQLInt) },
                 companyId: { type: GraphQLString }
             },
-            resolve: async (parent , args) => {
+            resolve: async (_ , args) => {
                 const res =  await axios.post('http://localhost:3000/users', { ...args })
                 return res.data ; 
             }
@@ -79,7 +97,7 @@ const mutation = new GraphQLObjectType({
         deleteUser: {
             type: UserType,
             args: { id: {type: new GraphQLNonNull(GraphQLString) }},
-            resolve: async (parent, args) => {
+            resolve: async (_, args) => {
                 const res = await axios.delete(`http://localhost:3000/users/${args.id}`)
                 return res.data ; 
             } 
@@ -88,12 +106,12 @@ const mutation = new GraphQLObjectType({
         editUser: {
             type: UserType,
             args: { 
-                id: {type: new GraphQLNonNull(GraphQLString) },
+                id: {type: new GraphQLNonNull(GraphQLString), resolve: (parent, _) => parent.id },
                 firstName: {type:  GraphQLString},
                 age: {type: GraphQLInt },
                 companyId: {type: GraphQLString }
             },
-            resolve: async (parent, {id, firstName, age, companyId}) =>{
+            resolve: async (_parent, {id, firstName, age, companyId}) =>{
                 const res = await axios.put(`http://localhost:3000/users/${id}`, {firstName, age, companyId})
                 return res.data ; 
             } 

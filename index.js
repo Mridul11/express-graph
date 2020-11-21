@@ -13,4 +13,5 @@ app.use("/graphql" , graphqlHTTP({
 
 // app.use("/", homeController);
 
+// tslint:disable-next-line: no-console
 app.listen(4001, () => console.log("app is listeing on port 4001"));
