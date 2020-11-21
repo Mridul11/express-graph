@@ -111,8 +111,8 @@ const mutation = new GraphQLObjectType({
                 age: {type: GraphQLInt },
                 companyId: {type: GraphQLString }
             },
-            resolve: async (_parent, {id, firstName, age, companyId}) =>{
-                const res = await axios.put(`http://localhost:3000/users/${id}`, {firstName, age, companyId})
+            resolve: async (_parent, { id, firstName, age, companyId }) => {
+                const res = await axios.put(`http://localhost:3000/users/${id}`, { firstName, age, companyId })
                 return res.data ; 
             } 
         }
